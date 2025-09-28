@@ -1,15 +1,18 @@
 package vn.edu.hust.blogapp.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.edu.hust.blogapp.dto.PostDto;
+import vn.edu.hust.blogapp.dto.PostResponse;
 import vn.edu.hust.blogapp.entity.Post;
 import vn.edu.hust.blogapp.exception.ResourceNotFoundException;
 import vn.edu.hust.blogapp.mapper.PostMapper;
 import vn.edu.hust.blogapp.repository.PostRepository;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,12 +26,28 @@ public class PostService {
         return PostMapper.mapToPostDto(post);
     }
 
-    public List<PostDto> getAllPosts(int pageNo, int pageSize){
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir){
 
-        return postRepository.findAll(pageable).getContent().stream()
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        List<PostDto> content =  posts.getContent().stream()
                 .map((post) -> PostMapper.mapToPostDto(post))
                 .collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse(
+                content,
+                posts.getNumber(),
+                posts.getSize(),
+                posts.getTotalElements(),
+                posts.getTotalPages(),
+                posts.isLast()
+        );
+
+        return postResponse;
     }
 
     public PostDto getPostById(Long id){
