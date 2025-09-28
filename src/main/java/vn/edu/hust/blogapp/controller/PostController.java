@@ -1,5 +1,6 @@
 package vn.edu.hust.blogapp.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
@@ -20,7 +21,7 @@ public class PostController {
     private PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(postDto));
     }
 
@@ -40,7 +41,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePostById(@RequestBody PostDto postDto, @PathVariable Long id){
+    public ResponseEntity<PostDto> updatePostById(@Valid @RequestBody PostDto postDto, @PathVariable Long id){
         return ResponseEntity.ok(postService.updatePost(id, postDto));
     }
 
