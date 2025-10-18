@@ -14,12 +14,11 @@ public class PostMapper {
     }
 
     public static PostDto mapToPostDto(Post post){
-        PostDto postDto = new PostDto(
-                post.getId(),
-                post.getTitle(),
-                post.getDescription(),
-                post.getContent()
-        );
+        PostDto postDto = new PostDto();
+        postDto.setId(post.getId());
+        postDto.setTitle(post.getTitle());
+        postDto.setDescription(post.getDescription());
+        postDto.setContent(post.getContent());
         return postDto;
     }
 }
