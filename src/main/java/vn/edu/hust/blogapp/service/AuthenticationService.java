@@ -16,6 +16,7 @@ import vn.edu.hust.blogapp.entity.User;
 import vn.edu.hust.blogapp.exception.BlogAPIException;
 import vn.edu.hust.blogapp.repository.RoleRepository;
 import vn.edu.hust.blogapp.repository.UserRepository;
+import vn.edu.hust.blogapp.security.JwtTokenProvider;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,13 +29,16 @@ public class AuthenticationService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider jwtTokenProvider;
 
     public String login(LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getEmail(), loginDto.getPassword()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User logged-in successfully";
+
+        String token = jwtTokenProvider.generateToken(authentication);
+        return token;
     }
 
     public String register(RegisterDto registerDto){
